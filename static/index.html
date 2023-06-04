@@ -1,54 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://unpkg.com/vue@3"></script>
     <title>juxr</title>
     <style>
+        * {
+            font-family: sans-serif;
+            user-select: none;
+        }
+
+        body {
+            padding: 20px;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #app {
+            background-color: silver;
+            padding: 20px;
+        }
+
+        .btn {
+            background-color: black;
+            color: white;
+            border-radius: 50%;
+            min-width: 50px;
+            min-height: 50px;
+            cursor: pointer;
+            margin-left: auto;
+        }
+
+        button:focus {
+            outline: none;
+        }
+        button {
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
+            border: none;
+            margin: 0;
+            padding: 0;
+            width: auto;
+            overflow: visible;
+
+            background: transparent;
+
+            /* inherit font & color from ancestor */
+            color: inherit;
+            font: inherit;
+
+            /* Normalize `line-height`. Cannot be changed from `normal` in Firefox 4+. */
+            line-height: normal;
+
+            /* Corrects font smoothing for webkit */
+            -webkit-font-smoothing: inherit;
+            -moz-osx-font-smoothing: inherit;
+
+            /* Corrects inability to style clickable `input` types in iOS */
+            -webkit-appearance: none;
+        }
+
+        .bg-green {
+            background-color: green;
+        }
+
+        .item {
+            font-size: 20px;
+            margin-bottom: 40px;
+        }
+
+        .flex {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
     </style>
-  </head>
-  <body>
+</head>
+
+<body>
     <div id="app">
         <ul>
-            <li v-for="session in sessions">
-                {{ session.artist }} - {{ session.title }}
-                <button @click="toggleSession(session.id)">
-                    {{ session.status }}
+            <li class="flex item" v-for="session in sessions">
+                <div class="item__content">
+                    {{ session.artist }} - {{ session.title }}
+                </div>
+                <button :class="session.status === 'playing' ? 'bg-green' : '' " class="btn"
+                    @click="toggleSession(session.id)">
+                    {{ session.status === 'playing' ? '||' : '|>' }}
                 </button>
             </li>
         </ul>
     </div>
 
     <script>
-      const useSessions = () => {
-        const sessions = Vue.ref([]);
+        const useSessions = () => {
+            const sessions = Vue.ref([]);
 
-        async function getSessions() {
-            sessions.value = await fetch('/sessions').then(resp => resp.json());
-        }
+            async function getSessions() {
+                sessions.value = await fetch('/sessions').then(resp => resp.json());
+            }
 
-        async function toggleSession(id) {
-            sessions.value = await fetch(`/toggle?id=${id}`).then(resp => resp.json());
-        }
+            async function toggleSession(id) {
+                sessions.value = await fetch(`/toggle?id=${id}`).then(resp => resp.json());
+            }
 
-        getSessions();
+            getSessions();
 
-        return { sessions, getSessions, toggleSession }
-      };
-
-      function setup() {
-        const {getSessions,sessions,toggleSession} = useSessions();
-
-        return {
-          sessions,
-          toggleSession,
-          getSessions
+            return { sessions, getSessions, toggleSession }
         };
-      }
 
-      Vue.createApp({ setup }).mount("#app");
+        function setup() {
+            const { getSessions, sessions, toggleSession } = useSessions();
+
+            return {
+                sessions,
+                toggleSession,
+                getSessions
+            };
+        }
+
+        Vue.createApp({ setup }).mount("#app");
     </script>
-  </body>
+</body>
+
 </html>
