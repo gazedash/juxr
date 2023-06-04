@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://unpkg.com/vue@3"></script>
+    <title>Juxer</title>
+    <style>
+    </style>
+  </head>
+  <body>
+    <div id="app">
+        <ul>
+            <li v-for="session in sessions">
+                {{ session.artist }} - {{ session.title }}
+                <button @click="toggleSession(session.id)">
+                    {{ session.status }}
+                </button>
+            </li>
+        </ul>
+    </div>
+
+    <script>
+      const useSessions = () => {
+        const sessions = Vue.ref([]);
+
+        async function getSessions() {
+            sessions.value = await fetch('/sessions').then(resp => resp.json());
+        }
+
+        async function toggleSession(id) {
+            sessions.value = await fetch(`/toggle?id=${id}`).then(resp => resp.json());
+        }
+
+        getSessions();
+
+        return { sessions, getSessions, toggleSession }
+      };
+
+      function setup() {
+        const {getSessions,sessions,toggleSession} = useSessions();
+
+        return {
+          sessions,
+          toggleSession,
+          getSessions
+        };
+      }
+
+      Vue.createApp({ setup }).mount("#app");
+    </script>
+  </body>
+</html>
