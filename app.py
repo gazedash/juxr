@@ -54,6 +54,7 @@ def hello_world():
 async def toggle():
     args = request.args
     id = args.get("id")
+    action = args.get('action')
     sessions = await MediaManager.request_async()
     x = list()
 
@@ -81,12 +82,19 @@ async def toggle():
                 new_dict['status'] = 'paused'
 
             if id == idd:
-                if is_playing:
-                    new_dict['status'] = 'paused'
-                    await item.try_pause_async()
+                if action:
+                    if action == 'prev':
+                        await item.try_skip_previous_async()
+                    if action == 'next':
+                        await item.try_skip_next_async()
+                    return '{"ok":true}'
                 else:
-                    new_dict['status'] = 'playing'
-                    await item.try_play_async()
+                    if is_playing:
+                        new_dict['status'] = 'paused'
+                        await item.try_pause_async()
+                    else:
+                        new_dict['status'] = 'playing'
+                        await item.try_play_async()
 
             index = index + 1
             x.append(new_dict)

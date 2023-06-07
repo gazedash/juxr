@@ -38,6 +38,7 @@
         button:focus {
             outline: none;
         }
+
         button {
             -webkit-tap-highlight-color: transparent;
             outline: none;
@@ -78,6 +79,10 @@
             justify-content: center;
             align-items: center;
         }
+
+        .btns {
+            margin-left: auto;
+        }
     </style>
 </head>
 
@@ -88,10 +93,18 @@
                 <div class="item__content">
                     {{ session.artist }} - {{ session.title }}
                 </div>
-                <button :class="session.status === 'playing' ? 'bg-green' : '' " class="btn"
-                    @click="toggleSession(session.id)">
-                    {{ session.status === 'playing' ? '||' : '|>' }}
-                </button>
+                <div class="btns">
+                    <button class="btn" @click="toggleSession(session.id, 'prev')">
+                        &lt;
+                    </button>
+                    <button :class="session.status === 'playing' ? 'bg-green' : '' " class="btn"
+                        @click="toggleSession(session.id)">
+                        {{ session.status === 'playing' ? '||' : '|>' }}
+                    </button>
+                    <button class="btn" @click="toggleSession(session.id, 'next')">
+                        &gt;
+                    </button>
+                </div>
             </li>
         </ul>
     </div>
@@ -104,8 +117,17 @@
                 sessions.value = await fetch('/sessions').then(resp => resp.json());
             }
 
-            async function toggleSession(id) {
-                sessions.value = await fetch(`/toggle?id=${id}`).then(resp => resp.json());
+            /** @param id {string} @param action {'prev' | 'next' | ''} */
+            async function toggleSession(id, action = '') {
+                const params = (new URLSearchParams({ id, ...(action ? { action } : {}) })).toString()
+                const data = await fetch(`/toggle?${params}`).then(resp => resp.json());
+                if (action) {
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 100)
+                } else {
+                    sessions.value = data;
+                }
             }
 
             getSessions();
