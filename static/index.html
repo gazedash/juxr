@@ -92,7 +92,6 @@
         <ul>
             <li class="flex item" v-for="session in sessions">
                 <div :title="session.source_app" class="item__content">
-                    <!-- {{ session.source_app }} -->
                     <i :class="`fa fa-solid fa-brands fa-${session.source_app?.toLowerCase()}`"></i>
                     {{ session.artist }} - {{ session.title }}
                 </div>
