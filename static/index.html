@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://unpkg.com/vue@3"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></style>
     <title>juxr</title>
     <style>
         * {
@@ -90,7 +91,9 @@
     <div id="app">
         <ul>
             <li class="flex item" v-for="session in sessions">
-                <div class="item__content">
+                <div :title="session.source_app" class="item__content">
+                    <!-- {{ session.source_app }} -->
+                    <i :class="`fa fa-solid fa-brands fa-${session.source_app?.toLowerCase()}`"></i>
                     {{ session.artist }} - {{ session.title }}
                 </div>
                 <div class="btns">
@@ -121,13 +124,7 @@
             async function toggleSession(id, action = '') {
                 const params = (new URLSearchParams({ id, ...(action ? { action } : {}) })).toString()
                 const data = await fetch(`/toggle?${params}`).then(resp => resp.json());
-                if (action) {
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 100)
-                } else {
-                    sessions.value = data;
-                }
+                sessions.value = data;
             }
 
             getSessions();
