@@ -15,6 +15,8 @@ def get_key(dict):
 import subprocess
 
 def get_proc_name(AppId):
+    if AppId.endswith('.exe'):
+        return AppId.replace('.exe', '')
     cmd = f"get-StartApps | Where-Object {{$_.AppId -like '{AppId}'}} | Select Name | foreach {{ $_.Name }}"
     completed = subprocess.run(["powershell", "-Command", cmd], capture_output=True)
 
@@ -48,6 +50,7 @@ async def get_media_info():
 
             index = next((index for (index, item) in enumerate(global_sessions) if item["id"] == obj['id']), -1)
             obj['info']['index'] = index
+            obj['info']['source_id'] = item.source_app_user_model_id
             obj['info']['source_app'] = get_proc_name(item.source_app_user_model_id)
             if (index == -1):
                 obj['info']['index'] = 0
